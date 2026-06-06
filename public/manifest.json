@@ -1,0 +1,16 @@
+{
+  "name": "Granny's Fridge",
+  "short_name": "Fridge",
+  "description": "Smart inventory management for your fridge",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4A9EFF",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
