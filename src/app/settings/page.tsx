@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Navigation } from "@/components/Navigation";
-import { Copy, RefreshCw, Unlink, CheckCircle, XCircle, Loader } from "lucide-react";
+import { Copy, RefreshCw, Unlink, CheckCircle, XCircle, Loader, MessageSquare } from "lucide-react";
 
 
 export default function SettingsPage() {
@@ -198,41 +198,55 @@ export default function SettingsPage() {
                   </button>
                 </div>
               </div>
-            ) : lineCode ? (
-              /* ---- CODE PENDING STATE ---- */
-              <div style={{ marginTop: 16 }}>
-                <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 16 }}>
-                  請先加入 LINE 機器人好友，然後將以下連結碼傳送給機器人完成綁定：
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", margin: "20px 0" }}>
-                  <div style={{ fontSize: 42, fontWeight: 800, letterSpacing: 10, fontFamily: "monospace", background: "var(--bg-base)", padding: "16px 24px", borderRadius: 12, border: "2px dashed var(--accent)" }}>
-                    {lineCode}
-                  </div>
-                  <button className="btn-icon" onClick={copyCode} title="複製">
-                    <Copy size={18} />
-                  </button>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-muted)", background: "var(--bg-base)", padding: 12, borderRadius: 8 }}>
-                  <Loader size={14} style={{ animation: "spin 1.5s linear infinite" }} />
-                  等待 LINE 機器人收到連結碼後自動完成綁定...
-                </div>
-                <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-                  <button className="btn btn-secondary" style={{ flex: 1 }} onClick={generateLinkCode} disabled={lineCodeLoading}>
-                    <RefreshCw size={14} style={{ marginRight: 6 }} />重新產生連結碼
-                  </button>
-                </div>
-              </div>
             ) : (
-              /* ---- NOT CONNECTED STATE ---- */
+              /* ---- NOT CONNECTED STATE (Provides both OAuth & Code Link Options) ---- */
               <div style={{ marginTop: 16 }}>
-                <ol style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 2.0, paddingLeft: 20 }}>
-                  <li>掃描或搜尋 LINE 機器人並加為好友</li>
-                  <li>點擊下方「產生連結碼」取得 6 位數代碼</li>
-                  <li>將代碼傳訊息給 LINE 機器人即可完成綁定</li>
-                </ol>
-                <button className="btn btn-primary" style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }} onClick={generateLinkCode} disabled={lineCodeLoading}>
-                  {lineCodeLoading ? <Loader size={16} /> : "💬"} 產生連結碼並開始連結
-                </button>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>選項一：一鍵快速連動（推薦）</h3>
+                    <p style={{ color: "var(--text-secondary)", fontSize: 13, marginBottom: 10 }}>直接透過 LINE 授權完成綁定，無需手動傳代碼</p>
+                    <button className="btn" style={{ background: "#06C755", color: "#FFF", display: "flex", alignItems: "center", gap: 8 }} onClick={() => signIn("line")}>
+                      <MessageSquare size={16} /> 連結 LINE 帳號
+                    </button>
+                  </div>
+
+                  <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16 }}>
+                    <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>選項二：代碼手動連動</h3>
+                    {lineCode ? (
+                      <div>
+                        <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12 }}>
+                          請先加入 LINE 機器人好友，然後將以下連結碼傳送給機器人完成綁定：
+                        </p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", margin: "12px 0" }}>
+                          <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 8, fontFamily: "monospace", background: "var(--bg-base)", padding: "12px 20px", borderRadius: 10, border: "2px dashed var(--accent)" }}>
+                            {lineCode}
+                          </div>
+                          <button className="btn-icon" onClick={copyCode} title="複製">
+                            <Copy size={18} />
+                          </button>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--text-muted)", background: "var(--bg-base)", padding: 10, borderRadius: 8 }}>
+                          <Loader size={12} style={{ animation: "spin 1.5s linear infinite" }} />
+                          等待 LINE 機器人收到連結碼後自動完成綁定...
+                        </div>
+                        <button className="btn btn-secondary" style={{ marginTop: 12, width: "100%" }} onClick={generateLinkCode} disabled={lineCodeLoading}>
+                          <RefreshCw size={12} style={{ marginRight: 6 }} />重新產生連結碼
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <ol style={{ color: "var(--text-secondary)", fontSize: 13, lineHeight: 1.8, paddingLeft: 20, marginBottom: 12 }}>
+                          <li>掃描或搜尋 LINE 機器人並加為好友</li>
+                          <li>點擊下方「產生連結碼」取得 6 位數代碼</li>
+                          <li>將代碼傳訊息給 LINE 機器人即可完成綁定</li>
+                        </ol>
+                        <button className="btn btn-secondary" style={{ display: "flex", alignItems: "center", gap: 8 }} onClick={generateLinkCode} disabled={lineCodeLoading}>
+                          {lineCodeLoading ? <Loader size={14} /> : "💬"} 產生連結碼
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
