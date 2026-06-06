@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
         token.lineUserId = account.providerAccountId;
         
         // Handle linking if user is already logged in (token.id exists)
-        const targetUserId = token.id || user?.id;
+        const targetUserId = (token.id || user?.id) as string | undefined;
         if (targetUserId) {
           await prisma.user.update({
             where: { id: targetUserId },
