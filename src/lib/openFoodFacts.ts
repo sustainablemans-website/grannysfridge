@@ -14,7 +14,7 @@ export async function fetchProductByBarcode(
     const p = data.product;
     return {
       product_name: p.product_name_zh || p.product_name_en || p.product_name || "",
-      image_url: p.image_url || p.image_front_url || "",
+      image_url: p.image_url || p.image_front_url || p.image_front_small_url || p.image_small_url || p.image_front_display_url || "",
       brands: p.brands || "",
       categories: p.categories || "",
       quantity: p.quantity || "",
