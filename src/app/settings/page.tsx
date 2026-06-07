@@ -121,18 +121,10 @@ export default function SettingsPage() {
     if (!discordUrl) return alert("請先輸入 Discord Webhook URL 並儲存");
     setDiscordTesting(true);
     try {
-      const res = await fetch(discordUrl, {
+      const res = await fetch("/api/users/test-discord", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          embeds: [{
-            title: "🍎 阿嬤的冰箱 - Discord 測試",
-            description: "Discord Webhook 連線測試成功！排程到期提醒將會發送至此頻道。",
-            color: 0x4A9EFF,
-            footer: { text: "阿嬤的冰箱 智能管家" },
-            timestamp: new Date().toISOString()
-          }]
-        })
+        body: JSON.stringify({ webhookUrl: discordUrl }),
       });
       alert(res.ok ? "✅ 測試發送成功！請查看您的 Discord 頻道" : "❌ 發送失敗，請確認 Webhook URL");
     } finally {
@@ -298,22 +290,6 @@ export default function SettingsPage() {
               💡 提示：物品需設定「到期日」且剩餘天數在「提醒天數」以內，才會觸發通知。
             </div>
           </div>
-
-          {/* =========================== Webhook URL hint =========================== */}
-          <div className="card" style={{ padding: 24, border: "1px dashed var(--border)" }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>📡 LINE Bot Webhook 設定</h3>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.8 }}>
-              如果要啟用 LINE 自動加好友連結功能，請到 LINE Developers Console 的 Messaging API 設定中，
-              將 Webhook URL 設定為：
-            </p>
-            <div style={{ marginTop: 8, padding: "8px 12px", background: "var(--bg-base)", borderRadius: 8, fontFamily: "monospace", fontSize: 13, color: "var(--accent)", overflowX: "auto" }}>
-              https://&#123;您的網域&#125;/api/line/webhook
-            </div>
-            <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8 }}>
-              ⚠️ 本機開發時 LINE 無法連到 localhost，需部署至正式網域後才能使用自動連結功能。
-            </p>
-          </div>
-
         </div>
       </main>
     </div>
