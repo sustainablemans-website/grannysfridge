@@ -34,7 +34,7 @@ export function ItemCard({ item, onEdit, onDelete, onConsume, compact }: Props) 
       )}
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
         {item.imageUrl ? (
-          <img src={item.imageUrl} alt={item.name}
+          <img src={item.imageUrl} alt={item.name} loading="lazy"
             style={{ width: 56, height: 56, borderRadius: "var(--radius-sm)", objectFit: "cover", flexShrink: 0 }} />
         ) : (
           <div style={{ width: 56, height: 56, borderRadius: "var(--radius-sm)", flexShrink: 0,

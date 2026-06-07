@@ -75,6 +75,8 @@ model Location {
   parent    Location?  @relation("LocationHierarchy", fields: [parentId], references: [id])
   children  Location[] @relation("LocationHierarchy")
   items     Item[]
+
+  @@index([userId])
 }
 
 model Item {
@@ -96,6 +98,9 @@ model Item {
   location         Location?        @relation(fields: [locationId], references: [id], onDelete: Cascade)
   user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   notificationLogs NotificationLog[]
+
+  @@index([userId])
+  @@index([locationId])
 }
 
 model NotificationLog {
@@ -106,4 +111,6 @@ model NotificationLog {
   message String
   success Boolean  @default(true)
   item    Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
 }
