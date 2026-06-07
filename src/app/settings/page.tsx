@@ -194,55 +194,57 @@ export default function SettingsPage() {
               /* ---- NOT CONNECTED STATE (Provides both OAuth & Code Link Options) ---- */
               <div style={{ marginTop: 16 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>選項一：一鍵快速連動（推薦）</h3>
-                      <p style={{ color: "var(--text-secondary)", fontSize: 13, marginBottom: 10 }}>直接透過 LINE 授權完成綁定，無需手動傳代碼</p>
-                      <button className="btn" style={{ background: "#06C755", color: "#FFF", display: "flex", alignItems: "center", gap: 8 }} onClick={() => signIn("line")}>
-                        <MessageSquare size={16} /> 連結 LINE 帳號
-                      </button>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                      <img src="/line-qrcode.png" alt="LINE Bot QR Code" style={{ width: 80, height: 80, borderRadius: 8, border: "1px solid var(--border)" }} />
-                      <span style={{ fontSize: 11, color: "var(--text-muted)" }}>掃碼加好友</span>
-                    </div>
+                  <div>
+                    <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>選項一：一鍵快速連動（推薦）</h3>
+                    <p style={{ color: "var(--text-secondary)", fontSize: 13, marginBottom: 10 }}>直接透過 LINE 授權完成綁定，無需手動傳代碼</p>
+                    <button className="btn" style={{ background: "#06C755", color: "#FFF", display: "flex", alignItems: "center", gap: 8 }} onClick={() => signIn("line")}>
+                      <MessageSquare size={16} /> 連結 LINE 帳號
+                    </button>
                   </div>
 
                   <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16 }}>
                     <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>選項二：代碼手動連動</h3>
-                    {lineCode ? (
-                      <div>
-                        <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12 }}>
-                          請先掃描右方 QR Code 加入 LINE 機器人好友，然後將以下連結碼傳送給機器人完成綁定：
-                        </p>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", margin: "12px 0" }}>
-                          <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 8, fontFamily: "monospace", background: "var(--bg-base)", padding: "12px 20px", borderRadius: 10, border: "2px dashed var(--accent)" }}>
-                            {lineCode}
+                    <div style={{ display: "flex", gap: 20, alignItems: "flex-start", marginTop: 12 }}>
+                      <div style={{ flex: 1 }}>
+                        {lineCode ? (
+                          <div>
+                            <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12 }}>
+                              請先掃描右側 QR Code 將 LINE 機器人加為好友，然後將以下連結碼傳送給機器人完成綁定：
+                            </p>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", margin: "12px 0" }}>
+                              <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 8, fontFamily: "monospace", background: "var(--bg-base)", padding: "12px 20px", borderRadius: 10, border: "2px dashed var(--accent)" }}>
+                                {lineCode}
+                              </div>
+                              <button className="btn-icon" onClick={copyCode} title="複製">
+                                <Copy size={18} />
+                              </button>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--text-muted)", background: "var(--bg-base)", padding: 10, borderRadius: 8 }}>
+                              <Loader size={12} style={{ animation: "spin 1.5s linear infinite" }} />
+                              等待 LINE 機器人收到連結碼後自動完成綁定...
+                            </div>
+                            <button className="btn btn-secondary" style={{ marginTop: 12, width: "100%" }} onClick={generateLinkCode} disabled={lineCodeLoading}>
+                              <RefreshCw size={12} style={{ marginRight: 6 }} />重新產生連結碼
+                            </button>
                           </div>
-                          <button className="btn-icon" onClick={copyCode} title="複製">
-                            <Copy size={18} />
-                          </button>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--text-muted)", background: "var(--bg-base)", padding: 10, borderRadius: 8 }}>
-                          <Loader size={12} style={{ animation: "spin 1.5s linear infinite" }} />
-                          等待 LINE 機器人收到連結碼後自動完成綁定...
-                        </div>
-                        <button className="btn btn-secondary" style={{ marginTop: 12, width: "100%" }} onClick={generateLinkCode} disabled={lineCodeLoading}>
-                          <RefreshCw size={12} style={{ marginRight: 6 }} />重新產生連結碼
-                        </button>
+                        ) : (
+                          <div>
+                            <ol style={{ color: "var(--text-secondary)", fontSize: 13, lineHeight: 1.8, paddingLeft: 20, marginBottom: 12 }}>
+                              <li>掃描右側 QR Code 將 LINE 機器人加為好友</li>
+                              <li>點擊下方「產生連結碼」取得 6 位數代碼</li>
+                              <li>將代碼傳訊息給 LINE 機器人即可完成綁定</li>
+                            </ol>
+                            <button className="btn btn-secondary" style={{ display: "flex", alignItems: "center", gap: 8 }} onClick={generateLinkCode} disabled={lineCodeLoading}>
+                              {lineCodeLoading ? <Loader size={14} /> : "💬"} 產生連結碼
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    ) : (
-                      <div>
-                        <ol style={{ color: "var(--text-secondary)", fontSize: 13, lineHeight: 1.8, paddingLeft: 20, marginBottom: 12 }}>
-                          <li>掃描右方 QR Code 將 LINE 機器人加為好友</li>
-                          <li>點擊下方「產生連結碼」取得 6 位數代碼</li>
-                          <li>將代碼傳訊息給 LINE 機器人即可完成綁定</li>
-                        </ol>
-                        <button className="btn btn-secondary" style={{ display: "flex", alignItems: "center", gap: 8 }} onClick={generateLinkCode} disabled={lineCodeLoading}>
-                          {lineCodeLoading ? <Loader size={14} /> : "💬"} 產生連結碼
-                        </button>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 150 }}>
+                        <img src="/line-qrcode.png" alt="LINE Bot QR Code" style={{ width: 150, height: 150, borderRadius: 8, border: "1px solid var(--border)", background: "#FFF", padding: 8 }} />
+                        <span style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 500 }}>步驟一：掃碼加好友</span>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>
