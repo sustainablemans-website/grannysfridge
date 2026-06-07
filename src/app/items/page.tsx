@@ -33,13 +33,28 @@ export default function ItemsPage() {
   useEffect(() => { if (status === "authenticated") fetchAll(); }, [status, fetchAll]);
 
   const handleSaveItem = async (data: any) => {
+    let savedItem: Item;
     if (editingItem) {
       const res = await fetch(`/api/items/${editingItem.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       if (!res.ok) throw new Error("Failed");
+      savedItem = await res.json();
     } else {
       const res = await fetch("/api/items", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       if (!res.ok) throw new Error("Failed");
+      savedItem = await res.json();
     }
+    
+    // Schedule/Reschedule local notification on device
+    const { scheduleLocalNotification } = await import("@/lib/localNotifications");
+    const locationObj = locations.find(l => l.id === savedItem.locationId);
+    await scheduleLocalNotification({
+      id: savedItem.id,
+      name: savedItem.name,
+      expiryDate: savedItem.expiryDate ?? null,
+      reminderDays: savedItem.reminderDays,
+      locationName: locationObj?.name,
+    });
+
     await fetchAll();
   };
 
@@ -61,6 +76,11 @@ export default function ItemsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("確定要刪除？")) return;
     await fetch(`/api/items/${id}`, { method: "DELETE" });
+    
+    // Cancel local notification on device
+    const { cancelLocalNotification } = await import("@/lib/localNotifications");
+    await cancelLocalNotification(id);
+
     setItems(prev => prev.filter(i => i.id !== id));
   };
 

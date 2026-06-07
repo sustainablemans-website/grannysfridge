@@ -26,6 +26,16 @@ export default function SettingsPage() {
   const [cronResult, setCronResult] = useState<string | null>(null);
   const [cronLoading, setCronLoading] = useState(false);
 
+  // Local Push Notifications Alert hour state
+  const [alertHour, setAlertHour] = useState("9");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("grannysfridge_alert_hour") || "9";
+      setAlertHour(stored);
+    }
+  }, []);
+
   useEffect(() => { if (status === "unauthenticated") router.push("/"); }, [status, router]);
 
   // --- Fetch current LINE + Discord status ---
@@ -130,6 +140,16 @@ export default function SettingsPage() {
     } finally {
       setDiscordTesting(false);
     }
+  };
+
+  const handleAlertHourChange = (hour: string) => {
+    setAlertHour(hour);
+    localStorage.setItem("grannysfridge_alert_hour", hour);
+  };
+
+  const testLocalNotification = async () => {
+    const { triggerTestLocalNotification } = await import("@/lib/localNotifications");
+    await triggerTestLocalNotification();
   };
 
   // --- Cron test (uses authenticated endpoint, no CRON_SECRET in frontend) ---
@@ -277,7 +297,44 @@ export default function SettingsPage() {
             </form>
           </div>
 
-          {/* =========================== Cron Section =========================== */}
+          {/* =========================== Local Push Notifications Section =========================== */}
+          <div className="card" style={{ padding: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+              <span style={{ fontSize: 28 }}>📱</span>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 700 }}>手機原生通知</h2>
+                <p style={{ color: "var(--text-muted)", fontSize: 13 }}>到期日當天或提前提醒時，手機會彈出提醒通知</p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="alert-hour-select">每日提醒時間</label>
+                <select 
+                  id="alert-hour-select" 
+                  className="form-select" 
+                  value={alertHour} 
+                  onChange={e => handleAlertHourChange(e.target.value)}
+                  style={{ maxWidth: 200 }}
+                >
+                  {Array.from({ length: 24 }).map((_, i) => (
+                    <option key={i} value={i}>
+                      上午 {String(i).padStart(2, "0")}:00
+                    </option>
+                  ))}
+                </select>
+                <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>
+                  💡 設定後，新加入或修改的食材將會以此時間排程提醒通知。
+                </p>
+              </div>
+
+              <div style={{ display: "flex", gap: 8 }}>
+                <button type="button" className="btn btn-secondary" onClick={testLocalNotification}>
+                  🧪 測試本地通知 (5秒後發送)
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="card" style={{ padding: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
               <span style={{ fontSize: 28 }}>⏰</span>
